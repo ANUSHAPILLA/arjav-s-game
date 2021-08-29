@@ -10,6 +10,8 @@ var zombieGroup;
 var bullets = 70;
 
 var gameState = "fight"
+var score=0 
+ var lifelost=3
 
 
 function preload(){
@@ -17,6 +19,7 @@ function preload(){
   heart1Img = loadImage("assets/heart_1.png")
   heart2Img = loadImage("assets/heart_2.png")
   heart3Img = loadImage("assets/heart_3.png")
+  bulletsI = loadImage("assets/bullet.png")
 
   shooterImg = loadImage("assets/shooter_2.png")
   shooter_shooting = loadImage("assets/shooter_3.png")
@@ -50,20 +53,7 @@ player = createSprite(displayWidth-1150, displayHeight-300, 50, 50);
 
 
    //creating sprites to depict lives remaining
-   heart1 = createSprite(displayWidth-150,40,20,20)
-   heart1.visible = false
-    heart1.addImage("heart1",heart1Img)
-    heart1.scale = 0.4
-
-    heart2 = createSprite(displayWidth-100,40,20,20)
-    heart2.visible = false
-    heart2.addImage("heart2",heart2Img)
-    heart2.scale = 0.4
-
-    heart3 = createSprite(displayWidth-150,40,20,20)
-    heart3.addImage("heart3",heart3Img)
-    heart3.scale = 0.4
-   
+  
 
     //creating groups for zombies and bullets
     bulletGroup = new Group()
@@ -74,8 +64,8 @@ player = createSprite(displayWidth-1150, displayHeight-300, 50, 50);
 }
 
 function draw() {
-  background(0); 
-
+  background(0);
+  
 
 if(gameState === "fight"){
 
@@ -98,14 +88,15 @@ if(keyDown("RIGHT_ARROW")||touches.length>0){
 
 //release bullets and change the image of shooter to shooting position when space is pressed
 if(keyWentDown("space")){
-  bullet = createSprite(displayWidth-1150,player.y-30,20,10)
+  bullet = createSprite(displayWidth-1100,player.y-25,20,10)
   bullet.velocityX = 20
-  
+  bullet.addImage(bulletsI)
   bulletGroup.add(bullet)
   player.depth = bullet.depth
   player.depth = player.depth+2
-  player.addImage(shooter_shooting)
+  player.addImage(shooter_shootingr)
   bullets = bullets-1
+  bullet.scale = 0.02
 }
 
 //player goes back to original standing image once we stop pressing the space bar
@@ -126,6 +117,7 @@ if(zombieGroup.isTouching(bulletGroup)){
    if(zombieGroup[i].isTouching(bulletGroup)){
         zombieGroup[i].destroy()
         bulletGroup.destroyEach()
+        score+=20
        
         } 
   
@@ -138,17 +130,42 @@ if(zombieGroup.isTouching(player)){
  for(var i=0;i<zombieGroup.length;i++){     
       
   if(zombieGroup[i].isTouching(player)){
-       zombieGroup[i].destroy()
+    zombieGroup[i].destroy()
+     lifelost-=1
+
+       
        } 
+      
+      
  
  }
-}
 
+ 
+
+}
+if (lifelost===0){
+gameState="lost"  
+}
+/*if (lifelost===1){
+  
+  heart.addImage(heart2Img)
+}
+if (lifelost===2){
+ 
+  heart.changeImage(heart1Img)
+}
+if (lifelost===3){
+  gameState="lost"
+}*/
 //calling the function to spawn zombies
 enemy();
 }
 
 drawSprites();
+textSize(35) 
+  fill("black")
+text("score:"+score,500,50)
+text("lifes left:" +lifelost,500,100)
 
 //destroy zombie and player and display a message in gameState "lost"
 if(gameState == "lost"){
